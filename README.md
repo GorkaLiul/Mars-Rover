@@ -18,7 +18,7 @@ For the sake of the project we've decided a GUI interface is essential for this 
 1
 The design is being created with Figma and tkinter using Tkinter-Designer: check link to see rep: https://github.com/ParthJadhav/Tkinter-Designer
 
-![img_1.png](Desription Images (Ignore)/img_1.png)
+![img_5.png](img_5.png)
 The design is clearly missing of any aesthetic due to tight deadlines, hopefully action will be taken on this silly nonsense later. :/           
 
 
