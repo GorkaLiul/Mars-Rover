@@ -17,7 +17,8 @@ Although its not even by far finished, data storage to scv files has been made, 
 For the sake of the project we've decided a GUI interface is essential for this project to be open to anyone with non to bassic coding knowledge, this commes to the issue of having to make a bi-directional control system from the arduino to the user interface because the need to create do design and additional code which sum up to be an excessive amount of time. 
 
 The design is being created with Figma and tkinter using Tkinter-Designer: check link to see rep: https://github.com/ParthJadhav/Tkinter-Designer
-![img.png](img.png)
+
+![img.png](Desription Images (Ignore)/Current GUI.png)
 The design is clearly missing of any aesthetic due to tight deadlines, hopefully action will be taken on this silly nonsense later. :/           
 
 
@@ -26,4 +27,4 @@ The design is clearly missing of any aesthetic due to tight deadlines, hopefully
 for different functions such as scanning the surroundings and ploting, all the data sent by the serial port will be stored and a csv file, which will be structured as data tables using pandas, to different analysis operations such as plotting. 
 all the plots will be made using the Matplotlib library which provides a huge variety of prebuilt plotting systems. 
 
-![img_2.png](img_2.png)
+![MatplotLib.png](Desription%20Images%20%28Ignore%29%2FMatplotLib.png)
