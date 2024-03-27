@@ -15,7 +15,7 @@ Although its not even by far finished, data storage to scv files has been made, 
 #1.2.0 GUI, DIGITAL CONTROL & DATA ANALYSIS: 
 
 For the sake of the project we've decided a GUI interface is essential for this project to be open to anyone with non to bassic coding knowledge, this commes to the issue of having to make a bi-directional control system from the arduino to the user interface because the need to create do design and additional code which sum up to be an excessive amount of time. 
-
+1
 The design is being created with Figma and tkinter using Tkinter-Designer: check link to see rep: https://github.com/ParthJadhav/Tkinter-Designer
 
 ![Current GUI.png](Desription%20Images%20%28Ignore%29%2FCurrent%20GUI.png)
