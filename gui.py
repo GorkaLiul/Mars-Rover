@@ -1,10 +1,3 @@
-##MESSAGES FROM THE SEND_MESSAEGS FUNCTION WILL BE INTERPRETED BY THE ARDUINO
-    ##MESSAGES FROM THE SEND_MESSAEGS FUNCTION WILL BE INTERPRETED BY THE ARDUINO
-    ##MESSAGES FROM THE SEND_MESSAEGS FUNCTION WILL BE INTERPRETED BY THE ARDUINO
-    ##MESSAGES FROM THE SEND_MESSAEGS FUNCTION WILL BE INTERPRETED BY THE ARDUINO
-    ##MESSAGES FROM THE SEND_MESSAEGS FUNCTION WILL BE INTERPRETED BY THE ARDUINO
-
-
 from time import sleep
 import serial
 import serial.tools.list_ports
@@ -16,7 +9,7 @@ from math import sin, cos, atan2
 
 def listPorts():
     portsCMP = serial.tools.list_ports.comports()
-    return [port.device for port in portsCMP]
+    return [(port.device, port.description) for port in portsCMP]
 
 def update_joystick(event):
     x = event.x
@@ -47,7 +40,7 @@ def reset_cursor_position(event=None):
 def resetBoard():
     global boardPort
     global board
-    boardPort = port_var.get()
+    boardPort = port_var.get()[:5].upper()  # Only store COMx
     board = serial.Serial(boardPort, 9600)
     board.setDTR(False)
     sleep(2)
@@ -91,6 +84,7 @@ def export_csv():
     if 'board' in globals():
         board.write("to CSV".encode())
     ToCsv()
+
 def main():
     global port_var
     global text_box
@@ -104,6 +98,11 @@ def main():
     global dot_radius
     global send_button
     global face
+    global slider1
+    global slider2
+    global slider3
+    global slider4
+    global slider_labels
 
     ports = listPorts()
 
@@ -114,22 +113,22 @@ def main():
     port_label.pack()
 
     port_var = StringVar(root)
-    port_var.set(ports[0])
+    port_var.set(ports[0][0])  # Selecting the first port by default
 
-    port_menu = OptionMenu(root, port_var, *ports)
-    port_menu.config(width=20)
-    port_menu.pack(pady=10)
+    port_menu = OptionMenu(root, port_var, *[f"{port[0]} - {port[1]}" for port in ports])
+    port_menu.config(width=50,bg = "lightblue")
+    port_menu.pack(pady=5)
 
-    connect_button = Button(root, text="Connect", command=connect, bg="blue", fg="white")
-    connect_button.pack(pady=10)
+    connect_button = Button(root, text="Connect", command=connect)
+    connect_button.pack(pady=5)
 
     text_title = Label(root, text="Serial Port Messages:")
     text_title.pack()
 
     text_frame = Frame(root)
-    text_frame.pack(pady=10)
+    text_frame.pack(pady=5)
 
-    text_box = Text(text_frame, height=20, width=40)
+    text_box = Text(text_frame, height=15, width=40)
     text_box.pack(side=LEFT)
 
     scrollbar = ttk.Scrollbar(text_frame, command=text_box.yview)
@@ -138,7 +137,7 @@ def main():
     text_box.config(yscrollcommand=scrollbar.set)
 
     entry_frame = Frame(root)
-    entry_frame.pack(pady=10)
+    entry_frame.pack(pady=5)
 
     entry = Entry(entry_frame, width=40)
     entry.pack(side=LEFT)
@@ -150,36 +149,56 @@ def main():
     main_frame.pack()
 
     joystick_frame = Frame(main_frame)
-    joystick_frame.pack(side=RIGHT)
+    joystick_frame.pack(side=LEFT)
 
-    joystick_canvas = Canvas(joystick_frame, width=200, height=200, bg="white", state=DISABLED)
+    joystick_canvas = Canvas(joystick_frame, width=150, height=150, bg="white", state="normal")
     joystick_canvas.pack()
 
-    joystick_center = 100
-    joystick_radius = 80
+    joystick_center = 75
+    joystick_radius = 60
     joystick_canvas.create_oval(joystick_center - joystick_radius, joystick_center - joystick_radius,
                                 joystick_center + joystick_radius, joystick_center + joystick_radius, outline="black")
 
-    dot_radius = 5
+    dot_radius = 3
     dot = joystick_canvas.create_oval(joystick_center - dot_radius, joystick_center - dot_radius,
                                       joystick_center + dot_radius, joystick_center + dot_radius, fill="red")
 
     joystick_canvas.bind("<B1-Motion>", update_joystick)
     joystick_canvas.bind("<ButtonRelease-1>", lambda event: joystick_position.config(text=""))
 
-    joystick_position = Label(root, text="", font=("Arial", 12))
+    joystick_position = Label(root, text="", font=("Arial", 10))
     joystick_position.pack()
     root.bind("<Leave>", reset_cursor_position)
     root.bind("<ButtonRelease-1>", reset_cursor_position)
     root.bind("<ButtonRelease-1>", reset_cursor_position)
-
+    root.title("Mars-rover")
     export_button = Button(root, text="Export CSV", command=export_csv)
-    export_button.pack(pady=10)
+    export_button.pack(pady=5)
     face = joystick_canvas.create_oval(0, 0, 0, 0, outline="red", fill="red")
+
+    sliders_frame = Frame(main_frame)
+    sliders_frame.pack(pady=5, padx=10, side=RIGHT)
+
+    slider1 = Scale(sliders_frame, from_=0, to=100, orient=VERTICAL, length=150, bg="lightblue")
+    slider1.pack(side=LEFT, padx=5)
+    slider1_label = Label(sliders_frame, text="S1")
+    slider1_label.pack(side=LEFT)
+
+    slider2 = Scale(sliders_frame, from_=0, to=100, orient=VERTICAL, length=150, bg="OliveDrab2")
+    slider2.pack(side=LEFT, padx=5)
+    slider2_label = Label(sliders_frame, text="S2")
+    slider2_label.pack(side=LEFT)
+
+    slider3 = Scale(sliders_frame, from_=0, to=100, orient=VERTICAL, length=150, bg="salmon1")
+    slider3.pack(side=LEFT, padx=5)
+    slider3_label = Label(sliders_frame, text="S3")
+    slider3_label.pack(side=LEFT)
+    slider4 = Scale(sliders_frame, from_=0, to=100, orient=VERTICAL, length=150, bg="MediumOrchid1")
+    slider4.pack(side=LEFT, padx=5)
+    slider4_label = Label(sliders_frame, text="S4")
+    slider4_label.pack(side=LEFT)
 
     root.mainloop()
 
 if __name__ == "__main__":
     main()
-
-print("success")
