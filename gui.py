@@ -7,11 +7,16 @@ from tkinter import *
 from tkinter import ttk
 from math import sin, cos, atan2
 
+# OBJECTS:
+
+
 def listPorts():
     portsCMP = serial.tools.list_ports.comports()
     return [(port.device, port.description) for port in portsCMP]
 
+
 def update_joystick(event):
+    global norm_x, norm_y
     x = event.x
     y = event.y
 
@@ -28,15 +33,26 @@ def update_joystick(event):
     joystick_position["text"] = f"X: {norm_x}, Y: {norm_y}"
 
     joystick_canvas.coords(dot, x - dot_radius, y - dot_radius, x + dot_radius, y + dot_radius)
+    sendData(norm_x, norm_y)
+    send_message(norm_x, norm_y)
 
-    send_message()
 
 def reset_cursor_position(event=None):
+    global output
+    reset_message = "Reset cursor position"
+    reset_message_bytes = reset_message.encode() + b'\n'
+    if 'board' in globals():
+        board.write(reset_message_bytes)
     x = joystick_center
     y = joystick_center
     joystick_canvas.coords(dot, x - dot_radius, y - dot_radius, x + dot_radius, y + dot_radius)
     joystick_position["text"] = "X: 0, Y: 0"
-
+    print(f"to {0,0}")
+    send_message(0, 0)  # Reset x and y coordinates in the output
+    output[0] = 0
+    output[1] = 0
+    output[2] = 0
+    print(output)
 def resetBoard():
     global boardPort
     global board
@@ -46,6 +62,19 @@ def resetBoard():
     sleep(2)
     board.flushInput()
     board.setDTR(True)
+
+
+def sendData(x=None, y=None):
+    if x and y is None:
+        x = 0
+        y = 0
+    global s1, s2, s3, s4, output
+    print(x, y, s1.get(), s2.get(), s3.get(), s4.get(), '\n')
+    output = [x, y, s1.get(), s2.get(), s3.get(), s4.get()]
+
+    return None
+    # raise NotImplementedError
+
 
 def ToCsv():
     oFile = open("Data.csv", "w+")
@@ -70,20 +99,37 @@ def ToCsv():
     visualizer = pd.read_csv("Data.csv")
     print(visualizer.head())
 
+
 def connect():
     resetBoard()
     joystick_canvas.config(state="normal")
     send_button.config(state="normal")
 
-def send_message():
-    message = entry.get()
+
+def send_message(x=None, y=None):
+    global s1, s2, s3, s4
+    global output
+    if x and y == None:
+        x = 0
+        y = 0
+
+    output = [x, y, s1.get(), s2.get(), s3.get(), s4.get()]
+
     if 'board' in globals():
-        board.write(message.encode())
+        # Convert the output to bytes before sending
+        output_bytes = ','.join(map(str, output)).encode() + b'\n'
+        board.write(output_bytes)
+
+        # Display the sent message in the text box
+        text_box.insert(END, f"Sent: {output}\n")
+        text_box.see(END)
+
 
 def export_csv():
     if 'board' in globals():
         board.write("to CSV".encode())
     ToCsv()
+
 
 def main():
     global port_var
@@ -98,11 +144,8 @@ def main():
     global dot_radius
     global send_button
     global face
-    global slider1
-    global slider2
-    global slider3
-    global slider4
-    global slider_labels
+    global sliders_frame
+    global s1, s2, s3, s4  # Define s1, s2, s3, s4 here
 
     ports = listPorts()
 
@@ -116,7 +159,7 @@ def main():
     port_var.set(ports[0][0])  # Selecting the first port by default
 
     port_menu = OptionMenu(root, port_var, *[f"{port[0]} - {port[1]}" for port in ports])
-    port_menu.config(width=50,bg = "lightblue")
+    port_menu.config(width=50, bg="lightblue")
     port_menu.pack(pady=5)
 
     connect_button = Button(root, text="Connect", command=connect)
@@ -164,14 +207,14 @@ def main():
                                       joystick_center + dot_radius, joystick_center + dot_radius, fill="red")
 
     joystick_canvas.bind("<B1-Motion>", update_joystick)
-    joystick_canvas.bind("<ButtonRelease-1>", lambda event: joystick_position.config(text=""))
+    joystick_canvas.bind("<ButtonRelease-1>", lambda event: reset_cursor_position(), send_message)
+
 
     joystick_position = Label(root, text="", font=("Arial", 10))
     joystick_position.pack()
     root.bind("<Leave>", reset_cursor_position)
     root.bind("<ButtonRelease-1>", reset_cursor_position)
-    root.bind("<ButtonRelease-1>", reset_cursor_position)
-    root.title("Mars-rover")
+    root.title("Emi's-rover")
     export_button = Button(root, text="Export CSV", command=export_csv)
     export_button.pack(pady=5)
     face = joystick_canvas.create_oval(0, 0, 0, 0, outline="red", fill="red")
@@ -179,26 +222,28 @@ def main():
     sliders_frame = Frame(main_frame)
     sliders_frame.pack(pady=5, padx=10, side=RIGHT)
 
-    slider1 = Scale(sliders_frame, from_=0, to=100, orient=VERTICAL, length=150, bg="lightblue")
-    slider1.pack(side=LEFT, padx=5)
-    slider1_label = Label(sliders_frame, text="S1")
-    slider1_label.pack(side=LEFT)
+    s1 = Scale(sliders_frame, from_=180, to=0, orient=VERTICAL, length=150, bg="lightblue", command=send_message)
+    s1.pack(side=LEFT, padx=5)
+    s1_label = Label(sliders_frame, text="S1")
+    s1_label.pack(side=LEFT)
 
-    slider2 = Scale(sliders_frame, from_=0, to=100, orient=VERTICAL, length=150, bg="OliveDrab2")
-    slider2.pack(side=LEFT, padx=5)
-    slider2_label = Label(sliders_frame, text="S2")
-    slider2_label.pack(side=LEFT)
+    s2 = Scale(sliders_frame, from_=180, to=0, orient=VERTICAL, length=150, bg="OliveDrab2", command=send_message)
+    s2.pack(side=LEFT, padx=5)
+    s2_label = Label(sliders_frame, text="S2")
+    s2_label.pack(side=LEFT)
 
-    slider3 = Scale(sliders_frame, from_=0, to=100, orient=VERTICAL, length=150, bg="salmon1")
-    slider3.pack(side=LEFT, padx=5)
-    slider3_label = Label(sliders_frame, text="S3")
-    slider3_label.pack(side=LEFT)
-    slider4 = Scale(sliders_frame, from_=0, to=100, orient=VERTICAL, length=150, bg="MediumOrchid1")
-    slider4.pack(side=LEFT, padx=5)
-    slider4_label = Label(sliders_frame, text="S4")
-    slider4_label.pack(side=LEFT)
+    s3 = Scale(sliders_frame, from_=180, to=0, orient=VERTICAL, length=150, bg="salmon1", command=send_message)
+    s3.pack(side=LEFT, padx=5)
+    s3_label = Label(sliders_frame, text="S3")
+    s3_label.pack(side=LEFT)
+
+    s4 = Scale(sliders_frame, from_=180, to=0, orient=VERTICAL, length=150, bg="MediumOrchid1", command=send_message)
+    s4.pack(side=LEFT, padx=5)
+    s4_label = Label(sliders_frame, text="S4")
+    s4_label.pack(side=LEFT)
 
     root.mainloop()
+
 
 if __name__ == "__main__":
     main()
