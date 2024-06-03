@@ -17,6 +17,4 @@ For the sake of the project we've decided a GUI interface is essential for this 
 1
 The design is being created with Figma and tkinter using Tkinter-Designercheck link to see rep: https://github.com/ParthJadhav/Tkinter-Designer
 
-![img.png](Desription Images (Ignore)/img.png)
-
-![](Desription Images (Ignore)/img.png)
+![img.png](Desription%20Images%20%28Ignore%29%2Fimg.png)
