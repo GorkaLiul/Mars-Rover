@@ -19,4 +19,4 @@ The design is being created with Figma and tkinter using Tkinter-Designercheck l
 
 ![img.png](Desription Images (Ignore)/img.png)
 
-![Description of the image](Description%20Images%20(Ignore)/img.png)
+![](Desription Images (Ignore)/img.png)
