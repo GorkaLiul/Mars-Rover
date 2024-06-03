@@ -214,7 +214,7 @@ def main():
     joystick_position.pack()
     root.bind("<Leave>", reset_cursor_position)
     root.bind("<ButtonRelease-1>", reset_cursor_position)
-    root.title("Emi's-rover")
+    root.title("Rvr")
     export_button = Button(root, text="Export CSV", command=export_csv)
     export_button.pack(pady=5)
     face = joystick_canvas.create_oval(0, 0, 0, 0, outline="red", fill="red")
