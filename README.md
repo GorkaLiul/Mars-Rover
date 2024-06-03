@@ -1,5 +1,4 @@
-# Mars-Rover
-
+# Mars-Rover 🕹
 
 #0: Project Aim
 This program aims to create an interface to control and reconfigure a rover in which technologies such as **Arduino** will be implemented. 
